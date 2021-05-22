@@ -1,14 +1,19 @@
 import { v4 as uuidv4 } from "uuid";
+import { GameEventHandlers } from "../components/Game/GameEventContext";
+import { clientPositionToGamePosition } from "../components/Game/logic/convertPosition";
+import { defaultBubbleSize } from "./constants";
 import { GameObject, GameObjectNoId } from "./objects";
 
 type GameLogicOptions = {
-  // container: HTMLElement;
+  container: HTMLElement;
   level: number;
 };
 
 export class GameLogic {
+  #container: HTMLElement;
   #objects: GameObject[] = [];
-  constructor({ level }: GameLogicOptions) {
+  constructor({ container, level }: GameLogicOptions) {
+    this.#container = container;
     import(`./levels/${level}`)
       .then(({ default: level }: { default: readonly GameObjectNoId[] }) => {
         this.#objects.length = 0;
@@ -30,5 +35,26 @@ export class GameLogic {
 
   public getObjects(): readonly GameObject[] {
     return this.#objects;
+  }
+
+  public getHandlers(): GameEventHandlers {
+    return {
+      event: (eventName, position, velocity) => {
+        this.addObject({
+          type: "bubble",
+          label: eventName,
+          size: {
+            width: defaultBubbleSize,
+            height: defaultBubbleSize,
+          },
+          position: clientPositionToGamePosition(
+            this.#container,
+            position.x,
+            position.y
+          ),
+          velocity,
+        });
+      },
+    };
   }
 }

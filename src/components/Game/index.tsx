@@ -7,6 +7,7 @@ import {
 } from "../../logic/constants";
 import { GameObject } from "../../logic/objects";
 import { GameObjectComponent } from "./components/GameObjectComponent";
+import { GameEventHandlers, GameEventProvider } from "./GameEventContext";
 
 type Props = {
   level: number;
@@ -15,12 +16,16 @@ type Props = {
 export const Game: React.VFC<Props> = memo(({ level }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [objects, setObjects] = useState<readonly GameObject[]>([]);
+  const [gameEventHandlers, setGameEventHandlers] =
+    useState<GameEventHandlers>();
 
   useEffect(() => {
     if (containerRef.current !== null) {
       const game = new GameLogic({
+        container: containerRef.current,
         level,
       });
+      setGameEventHandlers(game.getHandlers());
 
       let rafHandle = requestAnimationFrame(mainLoop);
 
@@ -38,19 +43,27 @@ export const Game: React.VFC<Props> = memo(({ level }) => {
   }, [level]);
 
   return (
-    <div key={level} className="gameRoot" ref={containerRef}>
-      {objects.map((object) => (
-        <GameObjectComponent key={object.id} object={object} />
-      ))}
+    <div key={level} className="gameRoot">
+      <div ref={containerRef}>
+        <GameEventProvider value={gameEventHandlers}>
+          {objects.map((object) => (
+            <GameObjectComponent key={object.id} object={object} />
+          ))}
+        </GameEventProvider>
+      </div>
       <style jsx>
         {`
           .gameRoot {
             box-sizing: content-box;
-            position: relative;
+            width: min-content;
             margin: 0 auto;
+            border: 1px solid #cccccc;
+            transform-origin: 50% 0;
+          }
+          .gameRoot > div {
+            position: relative;
             width: ${gameFieldWidth}px;
             height: ${gameFieldHeight}px;
-            border: 1px solid #cccccc;
             background-color: rgb(${gameFieldLightBackgroundRGB});
             background-image: conic-gradient(
                 at 50% 50%,
@@ -66,7 +79,6 @@ export const Game: React.VFC<Props> = memo(({ level }) => {
               );
             background-size: 40px 40px;
             background-position: 0 0, 20px 20px;
-            transform-origin: 50% 0;
             overflow: hidden;
           }
 
