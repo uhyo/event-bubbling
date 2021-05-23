@@ -1,8 +1,9 @@
-import { CircleObject } from "./base";
-import { Velocity } from "./dimension";
+import { Position, Velocity } from "./dimension";
 
-export type BubbleObject = CircleObject & {
+export type BubbleObject = {
   type: "bubble";
   id: string;
+  label: string;
+  position: Position;
   velocity: Velocity;
 };

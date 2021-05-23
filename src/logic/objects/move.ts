@@ -1,3 +1,4 @@
+import { bubbleSize } from "../constants";
 import { BubbleObject } from "./bubble";
 
 export function moveBubble(object: BubbleObject): BubbleObject | undefined {
@@ -5,7 +6,7 @@ export function moveBubble(object: BubbleObject): BubbleObject | undefined {
     x: object.position.x + object.velocity.x,
     y: object.position.y + object.velocity.y,
   };
-  if (position.y < -object.radius) {
+  if (position.y < -bubbleSize) {
     return undefined;
   }
   return {

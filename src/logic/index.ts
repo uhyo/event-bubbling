@@ -2,8 +2,9 @@ import { v4 as uuidv4 } from "uuid";
 import { GameEventHandlers } from "../components/Game/GameEventContext";
 import { clientPositionToGamePosition } from "../components/Game/logic/convertPosition";
 import { isNotNullish } from "../util/isNotNullish";
-import { defaultBubbleSize, frameInterval, skipThreshold } from "./constants";
-import { GameObject, GameObjectNoId, isBubble } from "./objects";
+import { frameInterval, skipThreshold } from "./constants";
+import { GameObject, GameObjectNoId } from "./objects";
+import { BubbleObject } from "./objects/bubble";
 import { moveBubble } from "./objects/move";
 
 type GameLogicOptions = {
@@ -14,6 +15,7 @@ type GameLogicOptions = {
 export class GameLogic {
   #container: HTMLElement;
   #objects: GameObject[] = [];
+  #bubbles: BubbleObject[] = [];
   #lastFrameTime: number | undefined;
   constructor({ container, level }: GameLogicOptions) {
     this.#container = container;
@@ -43,20 +45,14 @@ export class GameLogic {
   }
 
   private frame() {
-    let changed = false;
-    const newObjects = this.#objects
+    if (this.#bubbles.length === 0) {
+      return;
+    }
+    this.#bubbles = this.#bubbles
       .map((object) => {
-        if (isBubble(object)) {
-          changed = true;
-          return moveBubble(object);
-        } else {
-          return object;
-        }
+        return moveBubble(object);
       })
       .filter(isNotNullish);
-    if (changed) {
-      this.#objects = newObjects;
-    }
   }
 
   public terminate() {}
@@ -68,17 +64,27 @@ export class GameLogic {
     });
   }
 
+  public addBubble(object: Omit<BubbleObject, "type" | "id">) {
+    this.#bubbles = this.#bubbles.concat({
+      type: "bubble",
+      id: uuidv4(),
+      ...object,
+    });
+  }
+
   public getObjects(): readonly GameObject[] {
     return this.#objects;
+  }
+
+  public getBubbles(): readonly BubbleObject[] {
+    return this.#bubbles;
   }
 
   public getHandlers(): GameEventHandlers {
     return {
       event: (eventName, position, velocity) => {
-        this.addObject({
-          type: "bubble",
+        this.addBubble({
           label: eventName,
-          radius: defaultBubbleSize,
           position: clientPositionToGamePosition(
             this.#container,
             position.x,

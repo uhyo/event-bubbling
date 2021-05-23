@@ -6,7 +6,11 @@ import {
   gameFieldWidth,
 } from "../../logic/constants";
 import { GameObject } from "../../logic/objects";
-import { GameObjectComponent } from "./components/GameObjectComponent";
+import { BubbleObject } from "../../logic/objects/bubble";
+import {
+  BubbleObjectComponent,
+  GameObjectComponent,
+} from "./components/GameObjectComponent";
 import { GameEventHandlers, GameEventProvider } from "./GameEventContext";
 
 type Props = {
@@ -16,6 +20,7 @@ type Props = {
 export const Game: React.VFC<Props> = memo(({ level }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [objects, setObjects] = useState<readonly GameObject[]>([]);
+  const [bubbles, setBubbles] = useState<readonly BubbleObject[]>([]);
   const [gameEventHandlers, setGameEventHandlers] =
     useState<GameEventHandlers>();
 
@@ -36,8 +41,8 @@ export const Game: React.VFC<Props> = memo(({ level }) => {
 
       function mainLoop() {
         game.proceedTime(Date.now());
-        const objects = game.getObjects();
-        setObjects(objects);
+        setObjects(game.getObjects());
+        setBubbles(game.getBubbles());
         rafHandle = requestAnimationFrame(mainLoop);
       }
     }
@@ -49,6 +54,9 @@ export const Game: React.VFC<Props> = memo(({ level }) => {
         <GameEventProvider value={gameEventHandlers}>
           {objects.map((object) => (
             <GameObjectComponent key={object.id} object={object} />
+          ))}
+          {bubbles.map((object) => (
+            <BubbleObjectComponent key={object.id} object={object} />
           ))}
         </GameEventProvider>
       </div>
