@@ -2,14 +2,16 @@ import { createContext, useContext } from "react";
 import { Position, Velocity } from "../../logic/objects/dimension";
 
 export type GameEventHandlers = {
-  event(eventName: string, position: Position, velocity: Velocity): void;
+  domEvent(eventName: string, position: Position, velocity: Velocity): void;
+  removeObject(id: string): void;
 };
 
 const GameEventContext =
   createContext<GameEventHandlers | undefined>(undefined);
 
 const noopHandlers: GameEventHandlers = {
-  event() {},
+  domEvent() {},
+  removeObject() {},
 };
 
 export const GameEventProvider = GameEventContext.Provider;

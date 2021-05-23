@@ -31,6 +31,9 @@ export function getCollisionOfObject(
         },
       };
     }
+    case "disappearingBubble": {
+      return undefined;
+    }
     default: {
       assertNever(object);
     }

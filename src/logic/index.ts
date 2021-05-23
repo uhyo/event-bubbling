@@ -80,12 +80,18 @@ export class GameLogic {
     const handlers = {
       goal: ({ bubbleIndex }: GameEvents["goal"]) => {
         // remove bubble
+        const bubble = this.#bubbles.at(bubbleIndex);
         this.#bubbles.update(bubbleIndex, {
-          ...this.#bubbles.at(bubbleIndex),
+          ...bubble,
           position: {
             x: 0,
             y: -bubbleSize,
           },
+        });
+        this.addObject({
+          type: "disappearingBubble",
+          position: bubble.position,
+          label: bubble.label,
         });
       },
     };
@@ -112,6 +118,12 @@ export class GameLogic {
     });
   }
 
+  public removeObject(id: string) {
+    this.#objects = this.#objects.filter((object) => {
+      return object.id !== id;
+    });
+  }
+
   public getObjects(): readonly GameObject[] {
     return this.#objects;
   }
@@ -122,7 +134,7 @@ export class GameLogic {
 
   public getHandlers(): GameEventHandlers {
     return {
-      event: (eventName, position, velocity) => {
+      domEvent: (eventName, position, velocity) => {
         this.addBubble({
           label: eventName,
           position: clientPositionToGamePosition(
@@ -132,6 +144,9 @@ export class GameLogic {
           ),
           velocity,
         });
+      },
+      removeObject: (id) => {
+        this.removeObject(id);
       },
     };
   }

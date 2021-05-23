@@ -23,7 +23,7 @@ const level: readonly GameObjectNoId[] = [
     },
     position: {
       x: gameFieldWidth / 2,
-      y: 0,
+      y: 300,
     },
   },
 ];
