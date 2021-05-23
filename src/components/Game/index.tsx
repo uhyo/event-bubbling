@@ -35,6 +35,7 @@ export const Game: React.VFC<Props> = memo(({ level }) => {
       };
 
       function mainLoop() {
+        game.proceedTime(Date.now());
         const objects = game.getObjects();
         setObjects(objects);
         rafHandle = requestAnimationFrame(mainLoop);

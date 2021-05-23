@@ -12,7 +12,7 @@ export const GameObjectComponent: React.VFC<Props> = memo(({ object }) => {
   switch (object.type) {
     case "clickable": {
       return (
-        <div
+        <button
           className="clickable"
           onClick={(e) => {
             handlers.event(
@@ -27,6 +27,15 @@ export const GameObjectComponent: React.VFC<Props> = memo(({ object }) => {
               }
             );
           }}
+          style={{
+            transform: `translate(${
+              object.position.x - object.size.width / 2
+            }px,
+              ${object.position.y - object.size.height / 2}px
+            )`,
+            width: `${object.size.width}px`,
+            height: `${object.size.height}px`,
+          }}
         >
           <style jsx>
             {`
@@ -34,12 +43,6 @@ export const GameObjectComponent: React.VFC<Props> = memo(({ object }) => {
                 position: absolute;
                 left: 0;
                 top: 0;
-                transform: translate(
-                  ${object.position.x - object.size.width / 2}px,
-                  ${object.position.y - object.size.height / 2}px
-                );
-                width: ${object.size.width}px;
-                height: ${object.size.height}px;
                 border: 2px solid #ff9900;
                 border-radius: 4px;
                 background: repeating-linear-gradient(
@@ -51,6 +54,7 @@ export const GameObjectComponent: React.VFC<Props> = memo(({ object }) => {
                 );
                 color: #ff9900;
                 font-weight: bold;
+                font-size: 1rem;
 
                 display: flex;
                 flex-flow: row nowrap;
@@ -68,25 +72,29 @@ export const GameObjectComponent: React.VFC<Props> = memo(({ object }) => {
             `}
           </style>
           <span>{object.label}</span>
-        </div>
+        </button>
       );
     }
     case "goal": {
       return (
-        <div className="goal">
+        <div
+          className="goal"
+          style={{
+            transform: `translate(
+              ${object.position.x - object.size.width / 2}px,
+              ${object.position.y - object.size.height / 2}px
+            )`,
+            width: `${object.size.width}px`,
+            height: `${object.size.height}px`,
+          }}
+        >
           <style jsx>
             {`
               .goal {
                 position: absolute;
                 left: 0;
                 top: 0;
-                transform: translate(
-                  ${object.position.x - object.size.width / 2}px,
-                  ${object.position.y - object.size.height / 2}px
-                );
                 box-sizing: border-box;
-                width: ${object.size.width}px;
-                height: ${object.size.height}px;
                 border: 2px solid #33dd33;
                 background: repeating-linear-gradient(
                   -45deg,
@@ -118,28 +126,33 @@ export const GameObjectComponent: React.VFC<Props> = memo(({ object }) => {
     }
     case "bubble": {
       return (
-        <div className="bubble">
+        <div
+          className="bubble"
+          style={{
+            transform: `translate(
+              ${object.position.x - object.radius / 2}px,
+              ${object.position.y - object.radius / 2}px
+            )`,
+            width: `${object.radius}px`,
+            height: `${object.radius}px`,
+            background: `radial-gradient(
+              circle ${object.radius}px at 35% 35%,
+              rgba(221, 234, 240, 0.9),
+              rgba(101, 191, 244, 0.4) 40%,
+              rgba(101, 191, 244, 0.6) 60%,
+              rgba(221, 234, 240, 0.9) 80%
+            )`,
+          }}
+        >
           <style jsx>
             {`
               .bubble {
                 position: absolute;
                 left: 0;
                 top: 0;
-                transform: translate(
-                  ${object.position.x - object.size.width / 2}px,
-                  ${object.position.y - object.size.height / 2}px
-                );
                 box-sizing: border-box;
-                width: ${object.size.width}px;
-                height: ${object.size.height}px;
                 border: 0.5px solid rgb(34, 153, 221, 0.2);
                 border-radius: 9999px;
-                background: radial-gradient(
-                  circle ${object.size.width / 2}px at 45% 45%,
-                  rgba(101, 191, 244, 0.6),
-                  rgba(101, 191, 244, 0.4) 40%,
-                  rgba(221, 234, 240, 0.9) 100%
-                );
                 color: #2299dd;
                 font-weight: bold;
                 font-size: 0.75em;

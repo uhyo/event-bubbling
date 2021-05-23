@@ -9,3 +9,7 @@ export type GameObjectNoId = GameObject extends infer O
     ? Omit<O, "id">
     : never
   : never;
+
+export function isBubble(object: GameObject): object is BubbleObject {
+  return object.type === "bubble";
+}

@@ -5,3 +5,9 @@ export type RectObject = {
   size: Size;
   position: Position;
 };
+
+export type CircleObject = {
+  label: string;
+  radius: number;
+  position: Position;
+};

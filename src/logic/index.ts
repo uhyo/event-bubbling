@@ -1,8 +1,10 @@
 import { v4 as uuidv4 } from "uuid";
 import { GameEventHandlers } from "../components/Game/GameEventContext";
 import { clientPositionToGamePosition } from "../components/Game/logic/convertPosition";
-import { defaultBubbleSize } from "./constants";
-import { GameObject, GameObjectNoId } from "./objects";
+import { isNotNullish } from "../util/isNotNullish";
+import { defaultBubbleSize, frameInterval, skipThreshold } from "./constants";
+import { GameObject, GameObjectNoId, isBubble } from "./objects";
+import { moveBubble } from "./objects/move";
 
 type GameLogicOptions = {
   container: HTMLElement;
@@ -12,6 +14,7 @@ type GameLogicOptions = {
 export class GameLogic {
   #container: HTMLElement;
   #objects: GameObject[] = [];
+  #lastFrameTime: number | undefined;
   constructor({ container, level }: GameLogicOptions) {
     this.#container = container;
     import(`./levels/${level}`)
@@ -22,6 +25,38 @@ export class GameLogic {
         }
       })
       .catch(console.error);
+  }
+
+  public proceedTime(now: number) {
+    if (
+      this.#lastFrameTime === undefined ||
+      this.#lastFrameTime + skipThreshold < now
+    ) {
+      this.frame();
+      this.#lastFrameTime = now;
+      return;
+    }
+    while (this.#lastFrameTime + frameInterval < now) {
+      this.frame();
+      this.#lastFrameTime += frameInterval;
+    }
+  }
+
+  private frame() {
+    let changed = false;
+    const newObjects = this.#objects
+      .map((object) => {
+        if (isBubble(object)) {
+          changed = true;
+          return moveBubble(object);
+        } else {
+          return object;
+        }
+      })
+      .filter(isNotNullish);
+    if (changed) {
+      this.#objects = newObjects;
+    }
   }
 
   public terminate() {}
@@ -43,10 +78,7 @@ export class GameLogic {
         this.addObject({
           type: "bubble",
           label: eventName,
-          size: {
-            width: defaultBubbleSize,
-            height: defaultBubbleSize,
-          },
+          radius: defaultBubbleSize,
           position: clientPositionToGamePosition(
             this.#container,
             position.x,
