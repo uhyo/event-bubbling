@@ -1,3 +1,4 @@
+import { GameObject, GameObjectNoId } from ".";
 import { Position, Size } from "./dimension";
 
 export type RectObject = {
@@ -11,3 +12,18 @@ export type CircleObject = {
   radius: number;
   position: Position;
 };
+
+export type Movable = {
+  move?: (object: Movable) => GameObject;
+  moveMetadata: unknown;
+};
+
+export function createMovable<Obj extends GameObjectNoId>(
+  object: Obj,
+  move: (object: Obj) => Obj
+): Obj {
+  return {
+    ...object,
+    move,
+  };
+}

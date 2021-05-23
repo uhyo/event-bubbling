@@ -34,6 +34,15 @@ export function getCollisionOfObject(
     case "disappearingBubble": {
       return undefined;
     }
+    case "rectWall": {
+      return {
+        position: object.position,
+        size: object.size,
+        onCollide(bubbleIndex) {
+          eventReceiver("wallHit", { bubbleIndex });
+        },
+      };
+    }
     default: {
       assertNever(object);
     }
