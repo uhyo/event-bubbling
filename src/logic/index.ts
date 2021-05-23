@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { GameEventHandlers } from "../components/Game/GameEventContext";
 import { clientPositionToGamePosition } from "../components/Game/logic/convertPosition";
 import { isNotNullish } from "../util/isNotNullish";
+import { SortedArray } from "../util/sortedArray";
 import { frameInterval, skipThreshold } from "./constants";
 import { GameObject, GameObjectNoId } from "./objects";
 import { BubbleObject } from "./objects/bubble";
@@ -12,10 +13,12 @@ type GameLogicOptions = {
   level: number;
 };
 
+const bubbleSortKey = (item: BubbleObject) => item.position.y;
+
 export class GameLogic {
   #container: HTMLElement;
   #objects: GameObject[] = [];
-  #bubbles: BubbleObject[] = [];
+  #bubbles: SortedArray<BubbleObject> = new SortedArray(bubbleSortKey, []);
   #lastFrameTime: number | undefined;
   constructor({ container, level }: GameLogicOptions) {
     this.#container = container;
@@ -48,11 +51,15 @@ export class GameLogic {
     if (this.#bubbles.length === 0) {
       return;
     }
-    this.#bubbles = this.#bubbles
-      .map((object) => {
-        return moveBubble(object);
-      })
-      .filter(isNotNullish);
+    const currentBubbles = this.#bubbles.snapshot();
+    this.#bubbles = new SortedArray(
+      bubbleSortKey,
+      this.#bubbles
+        .map((object, index) => {
+          return moveBubble(object, index, currentBubbles);
+        })
+        .filter(isNotNullish)
+    );
   }
 
   public terminate() {}
@@ -65,7 +72,7 @@ export class GameLogic {
   }
 
   public addBubble(object: Omit<BubbleObject, "type" | "id">) {
-    this.#bubbles = this.#bubbles.concat({
+    this.#bubbles.add({
       type: "bubble",
       id: uuidv4(),
       ...object,
@@ -77,7 +84,7 @@ export class GameLogic {
   }
 
   public getBubbles(): readonly BubbleObject[] {
-    return this.#bubbles;
+    return this.#bubbles.snapshot();
   }
 
   public getHandlers(): GameEventHandlers {

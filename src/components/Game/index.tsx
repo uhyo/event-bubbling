@@ -20,7 +20,7 @@ type Props = {
 export const Game: React.VFC<Props> = memo(({ level }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [objects, setObjects] = useState<readonly GameObject[]>([]);
-  const [bubbles, setBubbles] = useState<readonly BubbleObject[]>([]);
+  const [bubbles, setBubbles] = useState<readonly BubbleObject[]>();
   const [gameEventHandlers, setGameEventHandlers] =
     useState<GameEventHandlers>();
 
@@ -55,7 +55,7 @@ export const Game: React.VFC<Props> = memo(({ level }) => {
           {objects.map((object) => (
             <GameObjectComponent key={object.id} object={object} />
           ))}
-          {bubbles.map((object) => (
+          {bubbles?.map((object) => (
             <BubbleObjectComponent key={object.id} object={object} />
           ))}
         </GameEventProvider>
