@@ -13,6 +13,7 @@ import { checkObjectCollision, moveBubble } from "./objects/move";
 type GameLogicOptions = {
   container: HTMLElement;
   level: number;
+  onSuccess: () => void;
 };
 
 const bubbleSortKey = (item: BubbleObject) => item.position.y;
@@ -20,13 +21,15 @@ const bubbleSortKey = (item: BubbleObject) => item.position.y;
 export class GameLogic {
   #container: HTMLElement;
   #lastFrameTime: number | undefined;
+  #onSuccess: (() => void) | undefined;
 
   #gameEventReceiver: GameEventReceiver;
   #objects: GameObject[] = [];
   #bubbles: SortedArray<BubbleObject> = new SortedArray(bubbleSortKey, []);
 
-  constructor({ container, level }: GameLogicOptions) {
+  constructor({ container, level, onSuccess }: GameLogicOptions) {
     this.#container = container;
+    this.#onSuccess = onSuccess;
     this.#gameEventReceiver = this.getGameEventHandlers();
     import(`./levels/${level}`)
       .then(({ default: level }: { default: readonly GameObjectNoId[] }) => {
@@ -93,6 +96,10 @@ export class GameLogic {
           position: bubble.position,
           label: bubble.label,
         });
+
+        // trigger success
+        this.#onSuccess?.();
+        this.#onSuccess = undefined;
       },
     };
 

@@ -1,9 +1,11 @@
-import { memo, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/router";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { GameLogic } from "../../logic";
 import {
   gameFieldHeight,
   gameFieldLightBackgroundRGB,
   gameFieldWidth,
+  levelNumber,
 } from "../../logic/constants";
 import { GameObject } from "../../logic/objects";
 import { BubbleObject } from "../../logic/objects/bubble";
@@ -11,6 +13,7 @@ import {
   BubbleObjectComponent,
   GameObjectComponent,
 } from "./components/GameObjectComponent";
+import { Success } from "./components/Success";
 import { GameEventHandlers, GameEventProvider } from "./GameEventContext";
 
 type Props = {
@@ -23,12 +26,24 @@ export const Game: React.VFC<Props> = memo(({ level }) => {
   const [bubbles, setBubbles] = useState<readonly BubbleObject[]>();
   const [gameEventHandlers, setGameEventHandlers] =
     useState<GameEventHandlers>();
+  const [success, setSuccess] = useState(false);
+
+  const router = useRouter();
+  const successHandler = useCallback(() => {
+    setSuccess(true);
+    if (level < levelNumber) {
+      setTimeout(() => {
+        router.push(`/level/${level + 1}`);
+      }, 3000);
+    }
+  }, [level]);
 
   useEffect(() => {
     if (containerRef.current !== null) {
       const game = new GameLogic({
         container: containerRef.current,
         level,
+        onSuccess: successHandler,
       });
       setGameEventHandlers(game.getHandlers());
 
@@ -58,6 +73,7 @@ export const Game: React.VFC<Props> = memo(({ level }) => {
           {bubbles?.map((object) => (
             <BubbleObjectComponent key={object.id} object={object} />
           ))}
+          {success && <Success />}
         </GameEventProvider>
       </div>
       <style jsx>

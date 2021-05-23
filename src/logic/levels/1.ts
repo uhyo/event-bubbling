@@ -19,11 +19,11 @@ const level: readonly GameObjectNoId[] = [
     label: "",
     size: {
       width: gameFieldWidth,
-      height: 30,
+      height: 40,
     },
     position: {
       x: gameFieldWidth / 2,
-      y: 300,
+      y: 0,
     },
   },
 ];
