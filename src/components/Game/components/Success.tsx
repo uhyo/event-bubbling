@@ -14,6 +14,7 @@ export const Success: React.VFC = () => {
             transform: translate(-50%, -50%);
             font-size: 2em;
             font-weight: bold;
+            z-index: 2;
 
             animation-name: appear;
             animation-play-state: running;

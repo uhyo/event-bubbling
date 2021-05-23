@@ -15,7 +15,7 @@ export type CircleObject = {
 
 export type Movable = {
   move?: (object: Movable) => GameObject;
-  moveMetadata: unknown;
+  moveMetadata?: unknown;
 };
 
 export function createMovable<Obj extends GameObjectNoId>(
