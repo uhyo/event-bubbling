@@ -19,42 +19,42 @@ export class SortedArray<T> {
     this.#array.splice(targetIndex, 0, item);
   }
 
-  // public update(index: number, item: T): void {
-  //   // bubble up/down
-  //   const oldItem = this.#array[index];
-  //   if (oldItem === undefined) {
-  //     throw new Error(`update failed: invalid index '${index}`);
-  //   }
-  //   this.#snapshotCache = undefined;
+  public update(index: number, item: T): void {
+    // bubble up/down
+    const oldItem = this.#array[index];
+    if (oldItem === undefined) {
+      throw new Error(`update failed: invalid index '${index}`);
+    }
+    this.#snapshotCache = undefined;
 
-  //   const newKey = this.#sortKey(item);
-  //   this.#array[index] = item;
+    const newKey = this.#sortKey(item);
+    this.#array[index] = item;
 
-  //   const oldKey = this.#sortKey(oldItem);
-  //   if (oldKey > newKey) {
-  //     // bubble up
-  //     while (index > 0) {
-  //       if (this.#sortKey(this.#array[index - 1]) > newKey) {
-  //         [this.#array[index - 1], this.#array[index]] = [
-  //           this.#array[index],
-  //           this.#array[index - 1],
-  //         ];
-  //         index--;
-  //       }
-  //     }
-  //   } else if (oldKey < newKey) {
-  //     // bubble down
-  //     while (index < this.#array.length - 1) {
-  //       if (this.#sortKey(this.#array[index + 1]) < newKey) {
-  //         [this.#array[index + 1], this.#array[index]] = [
-  //           this.#array[index],
-  //           this.#array[index + 1],
-  //         ];
-  //         index++;
-  //       }
-  //     }
-  //   }
-  // }
+    const oldKey = this.#sortKey(oldItem);
+    if (oldKey > newKey) {
+      // bubble up
+      while (index > 0) {
+        if (this.#sortKey(this.#array[index - 1]) > newKey) {
+          [this.#array[index - 1], this.#array[index]] = [
+            this.#array[index],
+            this.#array[index - 1],
+          ];
+          index--;
+        }
+      }
+    } else if (oldKey < newKey) {
+      // bubble down
+      while (index < this.#array.length - 1) {
+        if (this.#sortKey(this.#array[index + 1]) < newKey) {
+          [this.#array[index + 1], this.#array[index]] = [
+            this.#array[index],
+            this.#array[index + 1],
+          ];
+          index++;
+        }
+      }
+    }
+  }
 
   public remove(index: number): void {
     this.#snapshotCache = undefined;
@@ -65,7 +65,18 @@ export class SortedArray<T> {
     return (this.#snapshotCache ||= [...this.#array]);
   }
 
+  public at(index: number): T {
+    const item = this.#array[index];
+    if (item === undefined) {
+      throw new Error(`No item at index '${index}'`);
+    }
+    return item;
+  }
+
   // array functions
+  public forEach(callback: (item: T, index: number) => void): void {
+    this.#array.forEach(callback);
+  }
   public map<U>(mapper: (item: T, index: number) => U): U[] {
     return this.#array.map(mapper);
   }

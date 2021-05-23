@@ -91,7 +91,7 @@ export const Game: React.VFC<Props> = memo(({ level }) => {
             overflow: hidden;
           }
 
-          @media (min-width: 800px) and (min-height: 500px) {
+          @media (min-width: 600px) and (min-height: 500px) {
             .gameRoot {
               transform: scale(1.5);
             }

@@ -3,10 +3,12 @@ import { GameEventHandlers } from "../components/Game/GameEventContext";
 import { clientPositionToGamePosition } from "../components/Game/logic/convertPosition";
 import { isNotNullish } from "../util/isNotNullish";
 import { SortedArray } from "../util/sortedArray";
-import { frameInterval, skipThreshold } from "./constants";
+import { bubbleSize, frameInterval, skipThreshold } from "./constants";
 import { GameObject, GameObjectNoId } from "./objects";
 import { BubbleObject } from "./objects/bubble";
-import { moveBubble } from "./objects/move";
+import { GameEventReceiver, getCollisionOfObject } from "./objects/collosions";
+import { GameEvents } from "./objects/gameEvent";
+import { checkObjectCollision, moveBubble } from "./objects/move";
 
 type GameLogicOptions = {
   container: HTMLElement;
@@ -17,11 +19,15 @@ const bubbleSortKey = (item: BubbleObject) => item.position.y;
 
 export class GameLogic {
   #container: HTMLElement;
+  #lastFrameTime: number | undefined;
+
+  #gameEventReceiver: GameEventReceiver;
   #objects: GameObject[] = [];
   #bubbles: SortedArray<BubbleObject> = new SortedArray(bubbleSortKey, []);
-  #lastFrameTime: number | undefined;
+
   constructor({ container, level }: GameLogicOptions) {
     this.#container = container;
+    this.#gameEventReceiver = this.getGameEventHandlers();
     import(`./levels/${level}`)
       .then(({ default: level }: { default: readonly GameObjectNoId[] }) => {
         this.#objects.length = 0;
@@ -52,14 +58,41 @@ export class GameLogic {
       return;
     }
     const currentBubbles = this.#bubbles.snapshot();
+    const collisions = this.#objects
+      .map((obj) => getCollisionOfObject(obj, this.#gameEventReceiver))
+      .filter(isNotNullish);
     this.#bubbles = new SortedArray(
       bubbleSortKey,
       this.#bubbles
         .map((object, index) => {
-          return moveBubble(object, index, currentBubbles);
+          return moveBubble(object, index, currentBubbles, collisions);
         })
         .filter(isNotNullish)
     );
+    this.#bubbles.forEach((bubble, item) => {
+      for (const collision of collisions) {
+        checkObjectCollision(bubble, item, collision);
+      }
+    });
+  }
+
+  private getGameEventHandlers(): GameEventReceiver {
+    const handlers = {
+      goal: ({ bubbleIndex }: GameEvents["goal"]) => {
+        // remove bubble
+        this.#bubbles.update(bubbleIndex, {
+          ...this.#bubbles.at(bubbleIndex),
+          position: {
+            x: 0,
+            y: -bubbleSize,
+          },
+        });
+      },
+    };
+
+    return (type, payload) => {
+      handlers[type](payload as never);
+    };
   }
 
   public terminate() {}

@@ -1,5 +1,6 @@
 import { bubbleSize } from "../constants";
 import { BubbleObject } from "./bubble";
+import { Collision } from "./collosions";
 import { Position } from "./dimension";
 
 const dragFactor = 0.1;
@@ -8,7 +9,8 @@ const waterPressiure = 0.4;
 export function moveBubble(
   object: BubbleObject,
   index: number,
-  currentBubbles: readonly BubbleObject[]
+  currentBubbles: readonly BubbleObject[],
+  collisions: readonly Collision[]
 ): BubbleObject | undefined {
   const oldPosition = object.position;
   const position = {
@@ -30,21 +32,21 @@ export function moveBubble(
       -dragFactor * Math.sign(object.velocity.y) * object.velocity.y ** 2,
   };
 
-  // collision (up)
+  // bubble collisions (up)
   for (let i = index - 1; i >= 0; i--) {
     const b = currentBubbles[i];
     if (oldPosition.y - b.position.y > bubbleSize * 2) {
       continue;
     }
-    checkCollision(b);
+    checkBubbleCollision(b);
   }
-  // collision (down)
+  // bubble collisions (down)
   for (let i = index + 1; i < currentBubbles.length; i++) {
     const b = currentBubbles[i];
     if (oldPosition.y - b.position.y > bubbleSize * 2) {
       continue;
     }
-    checkCollision(b);
+    checkBubbleCollision(b);
   }
 
   return {
@@ -53,7 +55,7 @@ export function moveBubble(
     velocity,
   };
 
-  function checkCollision(bubble: BubbleObject) {
+  function checkBubbleCollision(bubble: BubbleObject) {
     const disq = distanceSquare(oldPosition, bubble.position);
     if (disq < bubbleSize ** 2) {
       // hit
@@ -65,6 +67,19 @@ export function moveBubble(
       velocity.x += 0.1 * Math.sqrt(disq) * Math.cos(arg);
       velocity.y += 0.1 * Math.sqrt(disq) * Math.sin(arg);
     }
+  }
+}
+
+export function checkObjectCollision(
+  bubble: BubbleObject,
+  index: number,
+  collision: Collision
+) {
+  const xdist = Math.abs(collision.position.x - bubble.position.x);
+  const ydist = Math.abs(collision.position.y - bubble.position.y);
+  if (xdist <= collision.size.width / 2 && ydist <= collision.size.height / 2) {
+    // collision
+    collision.onCollide(index);
   }
 }
 
