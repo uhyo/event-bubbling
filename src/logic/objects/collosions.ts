@@ -43,6 +43,18 @@ export function getCollisionOfObject(
         },
       };
     }
+    case "launcher": {
+      return undefined;
+    }
+    case "flowArea": {
+      return {
+        position: object.position,
+        size: object.size,
+        onCollide(bubbleIndex) {
+          eventReceiver("forced", { bubbleIndex, velocity: object.flow });
+        },
+      };
+    }
     default: {
       assertNever(object);
     }

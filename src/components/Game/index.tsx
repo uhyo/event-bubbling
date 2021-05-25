@@ -9,10 +9,8 @@ import {
 } from "../../logic/constants";
 import { GameObject } from "../../logic/objects";
 import { BubbleObject } from "../../logic/objects/bubble";
-import {
-  BubbleObjectComponent,
-  GameObjectComponent,
-} from "./components/GameObjectComponent";
+import { GameObjectComponent } from "./components/GameObjectComponent";
+import { BubbleObjectComponent } from "./components/GameObjectComponent/BubbleObjectComponent";
 import { Success } from "./components/Success";
 import { GameEventHandlers, GameEventProvider } from "./GameEventContext";
 
@@ -26,11 +24,11 @@ export const Game: React.VFC<Props> = memo(({ level }) => {
   const [bubbles, setBubbles] = useState<readonly BubbleObject[]>();
   const [gameEventHandlers, setGameEventHandlers] =
     useState<GameEventHandlers>();
-  const [success, setSuccess] = useState(false);
+  const [successLevel, setSuccessLevel] = useState(0);
 
   const router = useRouter();
   const successHandler = useCallback(() => {
-    setSuccess(true);
+    setSuccessLevel(level);
     if (level < levelNumber) {
       setTimeout(() => {
         router.push(`/level/${level + 1}`);
@@ -73,7 +71,7 @@ export const Game: React.VFC<Props> = memo(({ level }) => {
           {bubbles?.map((object) => (
             <BubbleObjectComponent key={object.id} object={object} />
           ))}
-          {success && <Success />}
+          {successLevel === level && <Success />}
         </GameEventProvider>
       </div>
       <style jsx>

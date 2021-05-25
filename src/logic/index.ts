@@ -8,12 +8,16 @@ import { GameObject, GameObjectNoId } from "./objects";
 import { Movable } from "./objects/base";
 import { BubbleObject } from "./objects/bubble";
 import {
+  checkBubbleCollision,
+  checkObjectCollision,
+  moveBubble,
+} from "./objects/bubbleMove";
+import {
   Collision,
   GameEventReceiver,
   getCollisionOfObject,
 } from "./objects/collosions";
 import { GameEvents } from "./objects/gameEvent";
-import { checkObjectCollision, moveBubble } from "./objects/move";
 
 type GameLogicOptions = {
   container: HTMLElement;
@@ -92,11 +96,12 @@ export class GameLogic {
             bubbleSortKey,
             this.#bubbles
               .map((object, index) => {
-                return moveBubble(object, index, currentBubbles, collisions);
+                return moveBubble(object, index, currentBubbles);
               })
               .filter(isNotNullish)
           )
         : this.#bubbles;
+    checkBubbleCollision(this.#bubbles);
     this.#bubbles.forEach((bubble, item) => {
       for (const collision of collisions) {
         checkObjectCollision(bubble, item, collision);
@@ -133,6 +138,12 @@ export class GameLogic {
       wallHit: ({ bubbleIndex }: GameEvents["wallHit"]) => {
         const bubble = this.#bubbles.at(bubbleIndex);
         removeBubble(bubbleIndex, bubble);
+      },
+      forced: ({ bubbleIndex, velocity }: GameEvents["forced"]) => {
+        const bubble = this.#bubbles.at(bubbleIndex);
+        // TODO: better calculation
+        bubble.velocity.x += velocity.x;
+        bubble.velocity.y += velocity.y;
       },
     };
 

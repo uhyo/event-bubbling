@@ -1,4 +1,4 @@
-export const levelNumber = 3;
+export const levelNumber = 5;
 
 // sizes
 export const gameFieldWidth = 300;

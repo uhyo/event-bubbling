@@ -1,11 +1,15 @@
 import { ClickableObject } from "./clickable";
 import { DisappearingBubbleObject } from "./disappearingBubble";
+import { FlowAreaObject } from "./flowArea";
 import { GoalObject } from "./goal";
+import { LauncherObject } from "./launcher";
 import { RectWallObject } from "./rectWall";
 
 export type GameObject =
   | RectWallObject
   | ClickableObject
+  | LauncherObject
+  | FlowAreaObject
   | GoalObject
   | DisappearingBubbleObject;
 
