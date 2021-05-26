@@ -22,7 +22,7 @@ const level: readonly GameObjectNoId[] = [
       height: 40,
     },
     position: {
-      x: gameFieldWidth - 50,
+      x: gameFieldWidth / 2,
       y: 20,
     },
   },
@@ -30,11 +30,11 @@ const level: readonly GameObjectNoId[] = [
     type: "rectWall",
     label: "",
     size: {
-      width: 100,
+      width: 160,
       height: 30,
     },
     position: {
-      x: gameFieldWidth - 50,
+      x: gameFieldWidth / 2,
       y: 220,
     },
   },
@@ -49,7 +49,22 @@ const level: readonly GameObjectNoId[] = [
       y: 300,
     },
     flow: {
-      x: -3,
+      x: 5,
+      y: 0,
+    },
+  },
+  {
+    type: "flowArea",
+    size: {
+      width: gameFieldWidth,
+      height: 40,
+    },
+    position: {
+      x: gameFieldWidth / 2,
+      y: 100,
+    },
+    flow: {
+      x: -5,
       y: 0,
     },
   },

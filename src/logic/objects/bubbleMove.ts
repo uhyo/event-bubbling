@@ -10,10 +10,8 @@ const bounceFactor = 0.03;
 
 export function moveBubble(
   object: BubbleObject,
-  index: number,
-  currentBubbles: readonly BubbleObject[]
+  waterFlow: Velocity
 ): BubbleObject | undefined {
-  const oldPosition = object.position;
   const position = {
     x: object.position.x + object.velocity.x,
     y: object.position.y + object.velocity.y,
@@ -21,16 +19,17 @@ export function moveBubble(
   if (position.y < -bubbleSize) {
     return undefined;
   }
+  const relativeVX = object.velocity.x - waterFlow.x;
+  const relativeVY = object.velocity.y - waterFlow.y;
   const velocity = {
     // drag
     x:
-      object.velocity.x +
-      -dragFactor * Math.sign(object.velocity.x) * object.velocity.x ** 2,
+      object.velocity.x + -dragFactor * Math.sign(relativeVX) * relativeVX ** 2,
     // water pressure + drag
     y:
       object.velocity.y -
       waterPressiure +
-      -dragFactor * Math.sign(object.velocity.y) * object.velocity.y ** 2,
+      -dragFactor * Math.sign(relativeVY) * relativeVY ** 2,
   };
 
   return {

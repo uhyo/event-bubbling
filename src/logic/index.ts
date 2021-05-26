@@ -17,6 +17,7 @@ import {
   GameEventReceiver,
   getCollisionOfObject,
 } from "./objects/collosions";
+import { Velocity } from "./objects/dimension";
 import { GameEvents } from "./objects/gameEvent";
 
 type GameLogicOptions = {
@@ -35,6 +36,7 @@ export class GameLogic {
   #gameEventReceiver: GameEventReceiver;
   #objects: GameObject[] = [];
   #bubbles: SortedArray<BubbleObject> = new SortedArray(bubbleSortKey, []);
+  #waterFlowField: Velocity[] = [];
 
   constructor({ container, level, onSuccess }: GameLogicOptions) {
     this.#container = container;
@@ -66,8 +68,6 @@ export class GameLogic {
   }
 
   private frame() {
-    const currentBubbles = this.#bubbles.snapshot();
-
     // move objects
     let objectsUpdated = false;
     const collisions: Collision[] = [];
@@ -88,6 +88,15 @@ export class GameLogic {
     if (objectsUpdated) {
       this.#objects = nextObjects;
     }
+    this.#waterFlowField = this.#bubbles.map(() => ({
+      x: 0,
+      y: 0,
+    }));
+    this.#bubbles.forEach((bubble, item) => {
+      for (const collision of collisions) {
+        checkObjectCollision(bubble, item, collision);
+      }
+    });
 
     // move bubbles
     this.#bubbles =
@@ -96,17 +105,12 @@ export class GameLogic {
             bubbleSortKey,
             this.#bubbles
               .map((object, index) => {
-                return moveBubble(object, index, currentBubbles);
+                return moveBubble(object, this.#waterFlowField[index]);
               })
               .filter(isNotNullish)
           )
         : this.#bubbles;
     checkBubbleCollision(this.#bubbles);
-    this.#bubbles.forEach((bubble, item) => {
-      for (const collision of collisions) {
-        checkObjectCollision(bubble, item, collision);
-      }
-    });
   }
 
   private getGameEventHandlers(): GameEventReceiver {
@@ -140,10 +144,8 @@ export class GameLogic {
         removeBubble(bubbleIndex, bubble);
       },
       forced: ({ bubbleIndex, velocity }: GameEvents["forced"]) => {
-        const bubble = this.#bubbles.at(bubbleIndex);
-        // TODO: better calculation
-        bubble.velocity.x += velocity.x;
-        bubble.velocity.y += velocity.y;
+        this.#waterFlowField[bubbleIndex].x += velocity.x;
+        this.#waterFlowField[bubbleIndex].y += velocity.y;
       },
     };
 
