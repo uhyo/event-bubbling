@@ -1,6 +1,9 @@
 import { useMemo } from "react";
 import { frameInterval } from "../../../../logic/constants";
 import { FlowAreaObject } from "../../../../logic/objects/flowArea";
+import { lcm } from "../../../../util/lcmgcd";
+
+const bgSize = 100;
 
 export const FlowAreaComponent: React.VFC<{
   object: FlowAreaObject;
@@ -17,18 +20,19 @@ export const FlowAreaComponent: React.VFC<{
   } = useMemo(() => {
     const fax = Math.abs(object.flow.x);
     const fay = Math.abs(object.flow.y);
+    const { width, height } = object.size;
 
-    const innerWidth = object.size.width * (1 + +!!fax);
-    const innerHeight = object.size.height * (1 + +!!fay);
+    const innerWidth = lcm(bgSize, width * fax) + width;
+    const innerHeight = lcm(bgSize, height * fay) + height;
 
-    const fromX = object.flow.x <= 0 ? 0 : -object.size.width;
-    const fromY = object.flow.y <= 0 ? 0 : -object.size.height;
-    const toX = object.flow.x < 0 ? -object.size.width : 0;
-    const toY = object.flow.y < 0 ? -object.size.height : 0;
+    const fromX = object.flow.x <= 0 ? 0 : -innerWidth + width;
+    const fromY = object.flow.y <= 0 ? 0 : -innerHeight + height;
+    const toX = object.flow.x < 0 ? -innerWidth + width : 0;
+    const toY = object.flow.y < 0 ? -innerHeight + height : 0;
 
-    // duration [frame] = innerWidth [px] / fax [px/frame]
-    const animationDurationX = fax ? object.size.width / fax : 0;
-    const animationDurationY = fay ? object.size.height / fay : 0;
+    // duration [frame] = distance [px] / fax [px/frame]
+    const animationDurationX = fax ? Math.abs(fromX - toX) / fax : 0;
+    const animationDurationY = fay ? Math.abs(fromY - toY) / fay : 0;
 
     return {
       innerWidth,
@@ -93,18 +97,31 @@ export const FlowAreaComponent: React.VFC<{
                 transparent 14px
               ),
               radial-gradient(
-                circle at 75px 0px,
+                circle at 85px 55px,
+                rgba(255, 255, 255, 0.8) 0,
+                rgba(255, 255, 255, 0.8) 8px,
+                transparent 10px
+              ),
+              radial-gradient(
+                circle at 75px 50px,
                 rgba(255, 255, 255, 0.8) 0,
                 rgba(255, 255, 255, 0.8) 15px,
                 transparent 18px
               ),
               radial-gradient(
-                circle at 85px 55px,
+                circle at 25px 50px,
+                rgba(255, 255, 255, 0.8) 0,
+                rgba(255, 255, 255, 0.8) 12px,
+                transparent 14px
+              ),
+              radial-gradient(
+                circle at 25px 20px,
                 rgba(255, 255, 255, 0.8) 0,
                 rgba(255, 255, 255, 0.8) 8px,
                 transparent 10px
               );
-            background-size: 100px 100px;
+            background-position: 0 0, 0 0, 0 0, 0 50px, 0 20px, -25px 10px;
+            background-size: ${bgSize}px ${bgSize}px;
             animation-name: moveY;
             animation-duration: ${animationDurationY * frameInterval}ms;
             animation-iteration-count: infinite;
