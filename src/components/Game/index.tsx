@@ -44,6 +44,7 @@ export const Game: React.VFC<Props> = memo(({ level }) => {
         onSuccess: successHandler,
       });
       setGameEventHandlers(game.getHandlers());
+      console.log({ level, game });
 
       let rafHandle = requestAnimationFrame(mainLoop);
 

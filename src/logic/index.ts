@@ -42,7 +42,7 @@ export class GameLogic {
     this.#container = container;
     this.#onSuccess = onSuccess;
     this.#gameEventReceiver = this.getGameEventHandlers();
-    import(`./levels/${level}`)
+    import(/* webpackPrefetch: true */ `./levels/${level}`)
       .then(({ default: level }: { default: readonly GameObjectNoId[] }) => {
         this.#objects.length = 0;
         for (const obj of level) {
