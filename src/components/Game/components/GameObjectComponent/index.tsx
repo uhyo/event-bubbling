@@ -7,6 +7,7 @@ import { GoalComponent } from "./GoalComponent";
 import { LauncherObjectComponent } from "./LauncherObjectComponent";
 import { PointerMoveObjectComponent } from "./PointerMoveObjectComponent";
 import { RectWallComponent } from "./RectWallComponent";
+import { ShareButtonObjectComponent } from "./ShareButtonComponent";
 
 type Props = {
   object: GameObject;
@@ -34,6 +35,9 @@ export const GameObjectComponent: React.VFC<Props> = memo(({ object }) => {
     }
     case "pointerMove": {
       return <PointerMoveObjectComponent object={object} />;
+    }
+    case "shareButton": {
+      return <ShareButtonObjectComponent object={object} />;
     }
   }
 });

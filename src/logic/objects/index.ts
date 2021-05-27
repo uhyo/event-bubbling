@@ -5,6 +5,7 @@ import { GoalObject } from "./goal";
 import { LauncherObject } from "./launcher";
 import { PointerMoveObject } from "./pointerMove";
 import { RectWallObject } from "./rectWall";
+import { ShareButtonObject } from "./shareButton";
 
 export type GameObject =
   | RectWallObject
@@ -13,6 +14,7 @@ export type GameObject =
   | LauncherObject
   | FlowAreaObject
   | GoalObject
+  | ShareButtonObject
   | DisappearingBubbleObject;
 
 export type GameObjectNoId = GameObject extends infer O

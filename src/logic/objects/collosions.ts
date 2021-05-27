@@ -58,6 +58,15 @@ export function getCollisionOfObject(
     case "pointerMove": {
       return undefined;
     }
+    case "shareButton": {
+      return {
+        position: object.position,
+        size: object.size,
+        onCollide(bubbleIndex) {
+          eventReceiver("share", { bubbleIndex });
+        },
+      };
+    }
     default: {
       assertNever(object);
     }

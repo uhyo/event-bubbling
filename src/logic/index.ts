@@ -147,6 +147,15 @@ export class GameLogic {
         this.#waterFlowField[bubbleIndex].x += velocity.x;
         this.#waterFlowField[bubbleIndex].y += velocity.y;
       },
+      share: ({ bubbleIndex }: GameEvents["share"]) => {
+        const bubble = this.#bubbles.at(bubbleIndex);
+        removeBubble(bubbleIndex, bubble);
+        window.open(
+          `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+            "Event Bubbling Visualized"
+          )}&url=${encodeURIComponent("https://event-bubbling.vercel.app")}`
+        );
+      },
     };
 
     return (type, payload) => {

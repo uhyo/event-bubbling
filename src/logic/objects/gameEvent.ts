@@ -11,6 +11,9 @@ export type GameEvents = {
     bubbleIndex: number;
     velocity: Velocity;
   };
+  share: {
+    bubbleIndex: number;
+  };
 };
 
 export type GameEventType = keyof GameEvents;
