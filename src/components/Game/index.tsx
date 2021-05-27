@@ -62,7 +62,13 @@ export const Game: React.VFC<Props> = memo(({ level }) => {
   }, [level]);
 
   return (
-    <div key={level} className="gameRoot">
+    <div
+      key={level}
+      className="gameRoot"
+      role="region"
+      aria-label={`Game Aria: Level ${level}`}
+      aria-live="assertive"
+    >
       <div ref={containerRef}>
         <GameEventProvider value={gameEventHandlers}>
           {objects.map((object) => (

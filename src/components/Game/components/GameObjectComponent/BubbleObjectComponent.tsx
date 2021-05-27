@@ -14,7 +14,7 @@ export const BubbleObjectComponent: React.VFC<{
         )`,
       }}
     >
-      <span>{object.label}</span>
+      <span aria-label={`${object.label} event`}>{object.label}</span>
       <style jsx>
         {`
           .bubble {
