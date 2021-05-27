@@ -46,14 +46,19 @@ export const Game: React.VFC<Props> = memo(({ level }) => {
       setGameEventHandlers(game.getHandlers());
       console.log({ level, game });
 
+      let cancelled = false;
       let rafHandle = requestAnimationFrame(mainLoop);
 
       return () => {
+        cancelled = true;
         cancelAnimationFrame(rafHandle);
         game.terminate();
       };
 
       function mainLoop() {
+        if (cancelled) {
+          return;
+        }
         game.proceedTime(Date.now());
         setObjects(game.getObjects());
         setBubbles(game.getBubbles());
