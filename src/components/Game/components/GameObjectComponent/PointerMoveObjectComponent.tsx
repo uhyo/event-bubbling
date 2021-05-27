@@ -1,37 +1,45 @@
 import { useRef } from "react";
 import {
-  clickInteractionInterval,
+  frameInterval,
   gameFieldLightBackgroundRGB,
+  pointerInteractionInterval,
 } from "../../../../logic/constants";
-import { ClickableObject } from "../../../../logic/objects/clickable";
+import { PointerMoveObject } from "../../../../logic/objects/pointerMove";
 import { useGameEventHandlers } from "../../GameEventContext";
 
-export const ClickableObjectComponent: React.VFC<{
-  object: ClickableObject;
+export const PointerMoveObjectComponent: React.VFC<{
+  object: PointerMoveObject;
 }> = ({ object }) => {
   const handlers = useGameEventHandlers();
-  const lastClickTime = useRef<number>();
+  const lastEventTime = useRef<number>();
+  const lastPointerMoveTime = useRef<number>();
 
   return (
     <button
-      className="clickable"
-      onClick={(e) => {
+      className="pointerMove"
+      onPointerMove={(e) => {
+        const now = Date.now();
+        const lpm = lastPointerMoveTime.current;
         if (
-          lastClickTime.current !== undefined &&
-          lastClickTime.current + clickInteractionInterval >= Date.now()
+          lastEventTime.current === undefined ||
+          (lpm !== undefined && lpm + pointerInteractionInterval >= Date.now())
         ) {
+          lastEventTime.current = now;
           return;
         }
-        lastClickTime.current = Date.now();
+
+        lastPointerMoveTime.current = now;
+        const timeDiff = now - lastEventTime.current;
         handlers.domEvent(
-          "click",
+          "pointermove",
           {
             x: e.clientX,
             y: e.clientY,
           },
           {
-            x: 0,
-            y: 0,
+            // v [px/frame] = diff [px] / diff [ms] * frameInterval [ms/frame]
+            x: (e.movementX / timeDiff) * frameInterval,
+            y: (e.movementY / timeDiff) * frameInterval,
           }
         );
       }}
@@ -45,20 +53,20 @@ export const ClickableObjectComponent: React.VFC<{
     >
       <style jsx>
         {`
-          .clickable {
+          .pointerMove {
             position: absolute;
             left: 0;
             top: 0;
-            border: 2px solid #ff9900;
+            border: 2px solid #fc88eb;
             border-radius: 4px;
             background: repeating-linear-gradient(
               -45deg,
               transparent,
               transparent 5px,
-              #ff9900 5px,
-              #ff9900 7px
+              #fc88ab 5px,
+              #fc88ab 7px
             );
-            color: #ff9900;
+            color: #fc88ab;
             font-weight: bold;
             font-size: 1rem;
 

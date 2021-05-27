@@ -31,6 +31,7 @@ export class SortedArray<T> {
     this.#array[index] = item;
 
     const oldKey = this.#sortKey(oldItem);
+
     if (oldKey > newKey) {
       // bubble up
       while (index > 0) {
@@ -40,6 +41,8 @@ export class SortedArray<T> {
             this.#array[index - 1],
           ];
           index--;
+        } else {
+          break;
         }
       }
     } else if (oldKey < newKey) {
@@ -51,6 +54,8 @@ export class SortedArray<T> {
             this.#array[index + 1],
           ];
           index++;
+        } else {
+          break;
         }
       }
     }

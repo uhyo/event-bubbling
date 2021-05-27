@@ -5,6 +5,7 @@ import { DisappearingBubbleComponent } from "./DisappearingBubbleComponent";
 import { FlowAreaComponent } from "./FlowAreaComponent";
 import { GoalComponent } from "./GoalComponent";
 import { LauncherObjectComponent } from "./LauncherObjectComponent";
+import { PointerMoveObjectComponent } from "./PointerMoveObjectComponent";
 import { RectWallComponent } from "./RectWallComponent";
 
 type Props = {
@@ -30,6 +31,9 @@ export const GameObjectComponent: React.VFC<Props> = memo(({ object }) => {
     }
     case "flowArea": {
       return <FlowAreaComponent object={object} />;
+    }
+    case "pointerMove": {
+      return <PointerMoveObjectComponent object={object} />;
     }
   }
 });

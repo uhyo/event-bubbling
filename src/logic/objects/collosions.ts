@@ -55,6 +55,9 @@ export function getCollisionOfObject(
         },
       };
     }
+    case "pointerMove": {
+      return undefined;
+    }
     default: {
       assertNever(object);
     }
