@@ -1,3 +1,4 @@
+import { gameFieldLightBackgroundRGB } from "../../../../logic/constants";
 import { ShareButtonObject } from "../../../../logic/objects/shareButton";
 
 export const ShareButtonObjectComponent: React.VFC<{
@@ -22,9 +23,16 @@ export const ShareButtonObjectComponent: React.VFC<{
             left: 0;
             top: 0;
             box-sizing: border-box;
-            background: #1da1f2;
+            border: 2px solid #1da1f2;
+            background: repeating-linear-gradient(
+              -45deg,
+              transparent,
+              transparent 5px,
+              #1da1f2 5px,
+              #1da1f2 7px
+            );
+            color: #1da1f2;
             border-radius: 6px;
-            color: #ffffff;
             font-weight: bold;
 
             display: flex;
@@ -38,6 +46,7 @@ export const ShareButtonObjectComponent: React.VFC<{
           span {
             padding: 2px;
             border-radius: 4px;
+            background-color: rgba(${gameFieldLightBackgroundRGB} / 0.8);
           }
         `}
       </style>
